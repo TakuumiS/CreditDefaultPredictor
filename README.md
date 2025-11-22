@@ -5,6 +5,12 @@
 ## Requirements & Dependencies:
 - Python 3.8.5+
 - pip (Python package manager)
+- pandas~=2.3.3
+- scipy~=1.16.3
+- scikit-learn~=1.7.2
+- xlrd
+- openpyxl
+
 
 
 **Run the following command to install dependencies:**
