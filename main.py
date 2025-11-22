@@ -1,7 +1,8 @@
 import pandas as pd
+from scipy.stats import randint
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
 
 
@@ -16,20 +17,19 @@ def main():
     pd.set_option('display.colheader_justify', 'left')
     pd.set_option('display.precision', 4)
 
-
     # Read data
     df = pd.read_excel("./data/default of credit card clients.xls", skiprows = 1)
     target = df['default payment next month']
 
-    # # EDA
-    # unique_marriages = df['MARRIAGE'].drop_duplicates()
-    # print("Marriage Values: ", sorted(unique_marriages))
-    #
-    # unique_sex = df['SEX'].drop_duplicates()
-    # print("Sex Values: ", sorted(unique_sex))
-    #
-    # unique_education = df['EDUCATION'].drop_duplicates()
-    # print("Education Values: ", sorted(unique_education))
+    # EDA
+    unique_marriages = df['MARRIAGE'].drop_duplicates()
+    print("Marriage Values: ", sorted(unique_marriages))
+
+    unique_sex = df['SEX'].drop_duplicates()
+    print("Sex Values: ", sorted(unique_sex))
+
+    unique_education = df['EDUCATION'].drop_duplicates()
+    print("Education Values: ", sorted(unique_education))
 
     # Data Preprocessing
     df.drop(columns=['ID', 'default payment next month'], axis=1, inplace=True)
@@ -61,6 +61,43 @@ def main():
     f1 = f1_score(y_test, y_pred)
 
     print("Pre-Optimized Model Metrics:")
+    print(f"Recall: {recall:.2f}")
+    print(f"Precision: {precision:.2f}")
+    print(f"Accuracy: {accuracy:.2f}")
+    print(f"F1 Score: {f1:.2f}")
+    print("\n")
+
+    # Optimize model
+    rf_optimized = RandomForestClassifier(random_state=42, class_weight='balanced')
+
+    param_distributions = {
+        'n_estimators': randint(10, 300),
+        'max_depth': randint(3, 25),
+        'min_samples_leaf': randint(1, 10),
+    }
+
+    random_search = RandomizedSearchCV(
+        estimator=rf_optimized,
+        param_distributions=param_distributions,
+        n_iter=25,
+        cv=5,
+        scoring='f1',
+        random_state=42,
+        n_jobs=-1
+    )
+
+    random_search.fit(x_train_scaled, y_train)
+    print(f"Best Parameters: {random_search.best_params_}")
+    print("\n")
+    optimized_model = random_search.best_estimator_
+    y_pred = optimized_model.predict(x_test_scaled)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+
+    print("Optimized Model Metrics:")
     print(f"Recall: {recall:.2f}")
     print(f"Precision: {precision:.2f}")
     print(f"Accuracy: {accuracy:.2f}")
