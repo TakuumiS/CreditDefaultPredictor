@@ -1,6 +1,4 @@
-# WESTERN GOVERNORS UNIVERSITY
-## D683 – ADVANCED AI AND ML
-- Takumi Sakai ID: 012362473
+
 
 ## Requirements & Dependencies:
 - Python 3.8.5+
@@ -20,4 +18,5 @@
 1. Download the data from the link: https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients
 2. Place the file in the data directory
 3. Ensure the file name is named default of credit card clients.xls
+
 4. Run the main.py file
